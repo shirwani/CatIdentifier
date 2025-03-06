@@ -1,0 +1,36 @@
+{
+    "image": {
+        "num_px": 100
+    },
+    "training": {
+        "learning_rate": 0.0075,
+        "num_iterations": 1000,
+        "data_file": "datasets/train.h5",
+        "log_file": "training.log"
+    },
+    "cv": {
+        "data_file": "datasets/cv.h5"
+    },
+    "testing": {
+        "data_file": "datasets/test.h5"
+    },
+    "model": {
+        "file": "m_20231214084353.pkl",
+        "layers": [
+            500,
+            100,
+            50,
+            1
+        ]
+    },
+    "classes": [
+        "not a cat",
+        "cat"
+    ],
+    "flask-app": {
+        "port": 5004,
+        "icon_img": "http://zakishirwani.com/ai/cats/static/images/cat-icon4.jpg",
+        "default_img_url": "http://zakishirwani.com/ai/cats/static/images/1Gr1cWuaov.jpg",
+        "test_images_folder": "static/images"
+    }
+}

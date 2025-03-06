@@ -3,24 +3,37 @@ import glob
 import shutil
 import random
 import string
+from PIL import Image
+from utils import *
 
 
 def copy_image_files(src_dir, dst_dir, num):
+    cfg = get_configs()
+    num_px = cfg['image']['num_px']
+
     image_files = glob.glob(os.path.join(src_dir, '*.j*g'), recursive=False)
     print(src_dir, len(image_files))
 
     if len(image_files) > num:
         image_files = random.sample(image_files, num)
 
+    i = 0
     for f in image_files:
+        i += 1
+        if i > num:
+            break
+
         src_file = os.path.basename(f)
-        file_extension = os.path.splitext(f)[1]
+        file_extension = '.jpeg'
         dst_file = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10)) + file_extension
 
         src = os.path.join(src_dir, src_file)
         dst = os.path.join(dst_dir, dst_file)
 
-        shutil.copy2(src, dst)
+        image = Image.open(src)
+        image = image.resize((num_px, num_px))
+        image.save(dst)
+
 
 def cleanup_images_folder():
 
@@ -71,6 +84,6 @@ def copy_examples(mode, pos, neg):
 
 if __name__ == '__main__':
     cleanup_images_folder()
-    copy_examples('train', pos=9000, neg=1000)
-    copy_examples('cv',    pos=500, neg=20)
-    copy_examples('test',  pos=500, neg=20)
+    copy_examples('train', pos=9000, neg=200)
+    copy_examples('cv',    pos=100,  neg=20)
+    copy_examples('test',  pos=100,  neg=20)

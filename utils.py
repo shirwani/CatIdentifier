@@ -2,18 +2,44 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 import os
+import glob
+import json
+from PIL import Image
 
+def get_jpeg_files(folder_path):
+    return glob.glob(os.path.join(folder_path, '*.jpeg'), recursive=False)
+
+
+def img_to_matrix(img_file_path, num_px):
+    image = Image.open(img_file_path)
+    resized_image = image.resize((num_px, num_px))
+    #print(img_file_path)
+    image_array = np.array(resized_image).reshape(num_px, num_px, 3)
+
+    return image_array
+
+
+def get_configs():
+    with open('config.json', 'r') as cfgfile:
+        cfg = json.load(cfgfile)
+    return cfg
 
 class logger:
-    def __init__(self, logfile):
-        self.logfile = logfile
+    def __init__(self):
+        self.logfile = ''
 
+    def set_logfile(self, logfile):
+        self.logfile = logfile
         if os.path.exists(self.logfile):
             os.remove(self.logfile)
 
     def log(self, text):
         with open(self.logfile, "a") as file:
             file.write(text + "\n")
+
+
+def get_date_time_str():
+    return datetime.now().strftime("%Y%m%d%H%M%S")
 
 
 def get_timestamp():

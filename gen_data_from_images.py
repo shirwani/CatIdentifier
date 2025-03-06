@@ -1,19 +1,9 @@
-from utils import *
-from PIL import Image
-import os
 import glob
 import h5py
+from utils import *
 
-
-def img_to_matrix(img_file_path):
-    dim = 64
-    image = Image.open(img_file_path)
-    resized_image = image.resize((dim, dim))
-    #print(img_file_path)
-    image_array = np.array(resized_image).reshape(dim, dim, 3)
-
-    return image_array
-
+cfg = get_configs()
+num_px = cfg['image']['num_px']
 
 def load_img_files(folder_path, x, y, y_val):
     jpg_files = glob.glob(os.path.join(folder_path, '*.*'), recursive=False)
@@ -24,7 +14,7 @@ def load_img_files(folder_path, x, y, y_val):
         if i > 10000:
             continue
         try:
-            img = img_to_matrix(jpg_file)
+            img = img_to_matrix(jpg_file, num_px)
             x.append(img)
             y.append(y_val)
         except:

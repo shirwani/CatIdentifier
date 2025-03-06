@@ -5,40 +5,64 @@ import pickle
 import numpy as np
 from PIL import Image
 from io import BytesIO
+import json
+
+cfg = get_configs()
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def run():
-    icon_img = "http://zakishirwani.com/ai/cats/static/images/cat-icon4.jpg"
-    default_img_url = "http://zakishirwani.com/ai/cats/static/images/1000_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg"
-    return render_template("getUserInput.html", default_img_url=default_img_url, icon_img=icon_img)
+    model               = cfg['model']['file']
+    icon_img            = cfg['flask-app']['icon_img']
+    default_img_url     = cfg['flask-app']['default_img_url']
+    test_images_folder  = cfg['flask-app']['test_images_folder']
 
+    test_images = get_jpeg_files(test_images_folder)
 
+    return render_template("getUserInput.html",
+                           default_img_url=default_img_url,
+                           icon_img=icon_img,
+                           model=model,
+                           test_images=test_images)
+
+############
+# Get result
+############
 @app.route('/result', methods=['GET', 'POST'])
 def identify():
-    with open("models/model.pkl", 'rb') as file:
-        data = pickle.load(file)
+    model   = cfg['model']['file']
+    num_px  = cfg['image']['num_px']
+    classes = cfg['classes']
 
+    with open("models/"+model, 'rb') as modelfile:
+        data = pickle.load(modelfile)
     parameters = data['parameters']
-    num_px = data['num_px']
-
-    classes = ["not a cat", "cat"]
 
     img_url = request.json
 
     try:
         img_data = requests.get(img_url).content
-        image = Image.open(BytesIO(img_data))
-        image = np.array(image.resize((num_px, num_px)))
-        image = image.reshape((1, num_px * num_px * 3)).T / 255.
-        my_prediction = predict(image, 1, parameters)
-        y = str(np.squeeze(my_prediction))
-        obj = classes[int(np.squeeze(my_prediction))]
-        return render_template("showResult.html", prediction=y, obj=obj, img_url=img_url)
     except:
         print("BAD_URL: " + img_url)
         return render_template("imageError.html")
 
+    image = img_to_matrix(BytesIO(img_data), num_px)
+    print(f"image.shape: {image.shape}")
+    image = image.reshape((1, -1)).T / 255.
+    print(f"image.shape: {image.shape}")
+
+    print(image)
+
+    my_prediction, my_accuracy = predict(image, 1, parameters)
+    print(f"my_prediction: {my_prediction}")
+    print(f"my_accuracy: {my_accuracy}")
+    print("Accuracy: {}%".format(round(my_accuracy * 100)))
+    y = str(np.squeeze(my_prediction))
+    obj = classes[int(np.squeeze(my_prediction))]
+    return render_template("showResult.html", prediction=y, obj=obj, img_url=img_url)
+
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5004)
+    port = cfg['flask-app']['port']
+    app.run(debug=True, port=port)
