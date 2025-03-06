@@ -15,11 +15,11 @@
         "data_file": "datasets/test.h5"
     },
     "model": {
-        "file": "m_20231214084353.pkl",
+        "file": "m_20250306075333.pkl",
         "layers": [
-            500,
-            100,
             50,
+            50,
+            10,
             1
         ]
     },
@@ -29,8 +29,9 @@
     ],
     "flask-app": {
         "port": 5004,
-        "icon_img": "http://zakishirwani.com/ai/cats/static/images/cat-icon4.jpg",
-        "default_img_url": "http://zakishirwani.com/ai/cats/static/images/1Gr1cWuaov.jpg",
+        "icon_img": "http://66-228-35-9.ip.linodeusercontent.com/ai/cats/static/images/9kYbajOZ0Z.jpeg",
+        "default_img_url": "http://66-228-35-9.ip.linodeusercontent.com/ai/cats/static/images/1mgNPMTLKV.jpeg",
         "test_images_folder": "static/images"
     }
 }
+

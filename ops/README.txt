@@ -31,6 +31,7 @@ pip install --upgrade pip
 #########################################
 # RUNNING TRAINING ON THE TRAINING SERVER
 #########################################
+cd ~/DeepCatIdentifier
 source venv/bin/activate
 pip install -r requirements.txt
 python training.py
@@ -87,9 +88,9 @@ pkill -f DeepCatIdentifier
 # python application.py
 
 # Get model name from config.json
-# nohup gunicorn -b 127.0.0.1:5002 application:app > /dev/null 2>&1 &
+# nohup gunicorn -b 127.0.0.1:5004 application:app > /dev/null 2>&1 &
 # Get model name from environment variable
-# MODEL="m_20250304205801.keras" nohup gunicorn -b 127.0.0.1:5002 application:app > /dev/null 2>&1 &
+# MODEL="m_20231214084353.pkl" nohup gunicorn -b 127.0.0.1:5004 application:app > /dev/null 2>&1 &
 
 
 

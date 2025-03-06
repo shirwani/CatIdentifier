@@ -6,17 +6,22 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 import json
+import os
 
 cfg = get_configs()
+model_file          = cfg['model']['file']
+icon_img            = cfg['flask-app']['icon_img']
+default_img_url     = cfg['flask-app']['default_img_url']
+test_images_folder  = cfg['flask-app']['test_images_folder']
+num_px              = cfg['image']['num_px']
+classes             = cfg['classes']
+
+model = os.getenv("MODEL", model_file)
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def run():
-    model               = cfg['model']['file']
-    icon_img            = cfg['flask-app']['icon_img']
-    default_img_url     = cfg['flask-app']['default_img_url']
-    test_images_folder  = cfg['flask-app']['test_images_folder']
 
     test_images = get_jpeg_files(test_images_folder)
 
@@ -31,9 +36,6 @@ def run():
 ############
 @app.route('/result', methods=['GET', 'POST'])
 def identify():
-    model   = cfg['model']['file']
-    num_px  = cfg['image']['num_px']
-    classes = cfg['classes']
 
     with open("models/"+model, 'rb') as modelfile:
         data = pickle.load(modelfile)
