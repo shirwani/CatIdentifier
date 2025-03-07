@@ -27,7 +27,8 @@
     source venv/bin/activate
     pip install --upgrade pip
     pip install -r requirements.txt
-    python training.py
+    #python training.py
+    nohup python training.py > /dev/null 2>&1 &
 
 ############################################################################
 # DEPLOYING THE TRAINED MODEL FROM THE TRAINING SERVER -> APPLICATION SERVER
