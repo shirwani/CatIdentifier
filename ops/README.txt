@@ -27,15 +27,18 @@
     source venv/bin/activate
     pip install --upgrade pip
     pip install -r requirements.txt
-    #python training.py
     nohup python training.py > /dev/null 2>&1 &
+
+    #############################################
+    # RUNNING THE TRAINING LOCALLY ON DEV MACHINE
+    #############################################
+    python training.py --dev
 
 ############################################################################
 # DEPLOYING THE TRAINED MODEL FROM THE TRAINING SERVER -> APPLICATION SERVER
 ############################################################################
     cd ~/DeepCatIdentifier
     scp ./models/* root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/models/.
-
 
 ##########################
 # APPLICATION SERVER SETUP
@@ -77,14 +80,20 @@
 ###################################################
 # RUNNING THE APPLICATION ON THE APPLICATION SERVER
 ###################################################
-cd /var/www/flask-apps/DeepCatIdentifier
-python3 -m venv venv
-source venv/bin/activate
-pkill -f DeepCatIdentifier
-# python application.py
+    cd /var/www/flask-apps/DeepCatIdentifier
+    python3 -m venv venv
+    source venv/bin/activate
+    pkill -f DeepCatIdentifier
+    # python application.py
 
-# Get model name from config.json
-# nohup gunicorn -b 127.0.0.1:5004 application:app > /dev/null 2>&1 &
-# Get model name from environment variable
-# MODEL="m_20250306125531.pkl" nohup gunicorn -b 127.0.0.1:5004 application:app > /dev/null 2>&1 &
+    # Get model name from config.json
+    # nohup gunicorn -b 127.0.0.1:5004 application:app > /dev/null 2>&1 &
+    # Get model name from environment variable
+    # MODEL="m_20250307101753.pkl" nohup gunicorn -b 127.0.0.1:5004 application:app > /dev/null 2>&1 &
 
+    ################################################
+    # RUNNING THE APPLICATION LOCALLY ON DEV MACHINE
+    ################################################
+    mkdir -p ./models
+    scp "root@172-104-24-151.ip.linodeusercontent.com:/root/DeepCatIdentifier/models/*.pkl" ./models/.
+    python application.py --dev

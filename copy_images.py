@@ -72,18 +72,18 @@ def copy_examples(mode, pos, neg):
     ]
 
     for ex in pos_examples:
-        srcdir = '/Users/macmini/Downloads/animals/train/' + ex
+        srcdir = '/Users/macmini/Downloads/animals/' + ex
         dstdir = './datasets/images/' + mode + '/positive'
         copy_image_files(srcdir, dstdir, pos)
 
     for ex in neg_examples:
-        srcdir = '/Users/macmini/Downloads/animals/train/' + ex
+        srcdir = '/Users/macmini/Downloads/animals/' + ex
         dstdir = './datasets/images/' + mode + '/negative'
         copy_image_files(srcdir, dstdir, neg)
 
 
 if __name__ == '__main__':
-    cleanup_images_folder()
+    #cleanup_images_folder()
     copy_examples('train', pos=2000, neg=2000)
     copy_examples('cv',    pos=100,  neg=20)
     copy_examples('test',  pos=100,  neg=20)

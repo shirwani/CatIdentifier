@@ -19,9 +19,15 @@ def img_to_matrix(img_file_path, num_px):
     return image_array
 
 
-def get_configs():
+def get_configs(dev):
     with open('config.json', 'r') as cfgfile:
-        cfg = json.load(cfgfile)
+        configs = json.load(cfgfile)
+
+    if dev:
+        cfg = configs['dev']
+    else:
+        cfg = configs['prod']
+
     return cfg
 
 class logger:
