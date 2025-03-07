@@ -1,81 +1,76 @@
-#######################
-# TRAINING SERVER SETUP
-#######################
-mkdir -p ~/DeepCatIdentifier
-cd ~/DeepCatIdentifier
-sudo apt update
-apt install python3.12-venv
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-
 ######################################################
 # COPYING TRAINING FILES FROM LOCAL -> TRAINING SERVER
 ######################################################
-./ops/copy-files-to-training-server
-    # ssh root@<TRAINING_SERVER> 'mkdir -p /root/DeepCatIdentifier/datasets'
-    # ssh root@<TRAINING_SERVER> 'mkdir -p /root/DeepCatIdentifier/ops'
-    # ssh root@<TRAINING_SERVER> 'mkdir -p /root/DeepCatIdentifier/models'
-    # scp ./training.py                     root@<TRAINING_SERVER>:/root/DeepCatIdentifier/.
-    # scp ./testing.py                      root@<TRAINING_SERVER>:/root/DeepCatIdentifier/.
-    # scp ./utils.py                        root@<TRAINING_SERVER>:/root/DeepCatIdentifier/.
-    # scp ./requirements.txt                root@<TRAINING_SERVER>:/root/DeepCatIdentifier/.
-    # scp ./datasets/cv.h5                  root@<TRAINING_SERVER>:/root/DeepCatIdentifier/datasets/.
-    # scp ./datasets/test.h5                root@<TRAINING_SERVER>:/root/DeepCatIdentifier/datasets/.
-    # scp ./datasets/test_catvnoncat.h5     root@<TRAINING_SERVER>:/root/DeepCatIdentifier/datasets/.
-    # scp ./datasets/train.h5               root@<TRAINING_SERVER>:/root/DeepCatIdentifier/datasets/.
-    # scp ./datasets/train_catvnoncat.h5    root@<TRAINING_SERVER>:/root/DeepCatIdentifier/datasets/.
-    # scp ./config.json                     root@<TRAINING_SERVER>:/root/DeepCatIdentifier/.
+    ssh root@172-104-24-151.ip.linodeusercontent.com 'mkdir -p /root/DeepCatIdentifier/datasets'
+    ssh root@172-104-24-151.ip.linodeusercontent.com 'mkdir -p /root/DeepCatIdentifier/models'
+    scp ./training.py                     root@172-104-24-151.ip.linodeusercontent.com:/root/DeepCatIdentifier/.
+    scp ./testing.py                      root@172-104-24-151.ip.linodeusercontent.com:/root/DeepCatIdentifier/.
+    scp ./utils.py                        root@172-104-24-151.ip.linodeusercontent.com:/root/DeepCatIdentifier/.
+    scp ./requirements.txt                root@172-104-24-151.ip.linodeusercontent.com:/root/DeepCatIdentifier/.
+    scp ./datasets/train.h5               root@172-104-24-151.ip.linodeusercontent.com:/root/DeepCatIdentifier/datasets/.
+    scp ./datasets/cv.h5                  root@172-104-24-151.ip.linodeusercontent.com:/root/DeepCatIdentifier/datasets/.
+    scp ./datasets/test.h5                root@172-104-24-151.ip.linodeusercontent.com:/root/DeepCatIdentifier/datasets/.
+    scp ./config.json                     root@172-104-24-151.ip.linodeusercontent.com:/root/DeepCatIdentifier/.
 
-#########################################
+#######################################################################
 # RUNNING TRAINING ON THE TRAINING SERVER
-#########################################
-cd ~/DeepCatIdentifier
-source venv/bin/activate
-pip install -r requirements.txt
-python training.py
+#
+# Prereqs:
+#   Install python 3.12 if it's not already installed on the server
+#   Make sure python3 is aliased to python 3.12
+#######################################################################
+    mkdir -p ~/DeepCatIdentifier
+    cd ~/DeepCatIdentifier
+    python3 -m venv venv
+    alias python="venv/bin/python3.12"
+    alias pip="venv/bin/pip3.12"
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    python training.py
 
 ############################################################################
 # DEPLOYING THE TRAINED MODEL FROM THE TRAINING SERVER -> APPLICATION SERVER
 ############################################################################
-cd ~/DeepCatIdentifier
-./ops/copy-models-to-app-server
-    # scp ./models/* root<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/models/.
+    cd ~/DeepCatIdentifier
+    scp ./models/* root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/models/.
 
 
 ##########################
 # APPLICATION SERVER SETUP
 ##########################
-# Update /etc/nginx/sites-available/sites on the application server
-sudo ln -s /etc/nginx/sites-available/sites /etc/nginx/sites-enabled
-sudo service nginx restart
+    # Update /etc/nginx/sites-available/sites on the application server
+    sudo ln -s /etc/nginx/sites-available/sites /etc/nginx/sites-enabled
+    sudo service nginx restart
 
 ###############################
 # APPLICATION ENVIRONMENT SETUP
 ###############################
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install gunicorn
-pip install -r requirements.txt
+    cd /var/www/flask-apps/DeepCatIdentifier
+    python3 -m venv venv
+    alias python="venv/bin/python3.12"
+    alias pip="venv/bin/pip3.12"
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install gunicorn
+    pip install -r requirements.txt
 
 ################################################
 # COPYING FILES FROM LOCAL -> APPLICATION SERVER
 ################################################
-./ops/copy-files-to-app-server
-    # ssh root@<APPLICATION_SERVER> 'mkdir -p /var/www/flask-apps/DeepCatIdentifier/models'
-    # ssh root@<APPLICATION_SERVER> 'mkdir -p /var/www/flask-apps/DeepCatIdentifier/templates'
-    # ssh root@<APPLICATION_SERVER> 'mkdir -p /var/www/flask-apps/DeepCatIdentifier/static/js'
-    # ssh root@<APPLICATION_SERVER> 'mkdir -p /var/www/flask-apps/DeepCatIdentifier/static/images'
-    # scp ./application.py              root@<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/.
-    # scp ./utils.py                    root@<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/.
-    # scp ./static/js/script.js         root@<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/static/js/.
-    # scp ./templates/getUserInput.html root@<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/templates/.
-    # scp ./templates/showResult.html   root@<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/templates/.
-    # scp ./templates/imageError.html   root@<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/templates/.
-    # scp ./static/images/*             root@<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/static/images/
-    # scp ./requirements.txt            root@<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/.
-    # scp ./config.json                 root@<APPLICATION_SERVER>:/var/www/flask-apps/DeepCatIdentifier/.
+    ssh root@66-228-35-9.ip.linodeusercontent.com 'mkdir -p /var/www/flask-apps/DeepCatIdentifier/models'
+    ssh root@66-228-35-9.ip.linodeusercontent.com 'mkdir -p /var/www/flask-apps/DeepCatIdentifier/templates'
+    ssh root@66-228-35-9.ip.linodeusercontent.com 'mkdir -p /var/www/flask-apps/DeepCatIdentifier/static/js'
+    ssh root@66-228-35-9.ip.linodeusercontent.com 'mkdir -p /var/www/flask-apps/DeepCatIdentifier/static/images'
+    scp ./application.py              root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/.
+    scp ./utils.py                    root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/.
+    scp ./static/js/script.js         root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/static/js/.
+    scp ./templates/getUserInput.html root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/templates/.
+    scp ./templates/showResult.html   root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/templates/.
+    scp ./templates/imageError.html   root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/templates/.
+    scp ./static/images/*             root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/static/images/
+    scp ./requirements.txt            root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/.
+    scp ./config.json                 root@66-228-35-9.ip.linodeusercontent.com:/var/www/flask-apps/DeepCatIdentifier/.
 
 
 ###################################################

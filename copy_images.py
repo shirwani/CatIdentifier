@@ -24,15 +24,20 @@ def copy_image_files(src_dir, dst_dir, num):
             break
 
         src_file = os.path.basename(f)
-        file_extension = '.jpeg'
+        file_extension = '.jpg'
         dst_file = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10)) + file_extension
 
         src = os.path.join(src_dir, src_file)
         dst = os.path.join(dst_dir, dst_file)
 
-        image = Image.open(src)
-        image = image.resize((num_px, num_px))
-        image.save(dst)
+        print(src + " -> " + dst)
+
+        try:
+            image = Image.open(src)
+            image = image.resize((num_px, num_px))
+            image.save(dst)
+        except:
+            print("FAILED: " + src)
 
 
 def cleanup_images_folder():
@@ -60,30 +65,25 @@ def copy_examples(mode, pos, neg):
         'cat'
     ]
     neg_examples = [
-        'butterfly',
-        'chicken',
-        'cow',
+        'lion',
         'dog',
         'elephant',
-        'horse',
-        'sheep',
-        'spider',
-        'squirrel'
+        'horse'
     ]
 
     for ex in pos_examples:
-        srcdir = '/Users/macmini/Downloads/archives/animals/' + ex
-        dstdir = '/Users/macmini/PycharmProjects/DeepObjectClassifier/datasets/images/' + mode + '/positive'
+        srcdir = '/Users/macmini/Downloads/animals/train/' + ex
+        dstdir = './datasets/images/' + mode + '/positive'
         copy_image_files(srcdir, dstdir, pos)
 
     for ex in neg_examples:
-        srcdir = '/Users/macmini/Downloads/archives/animals/' + ex
-        dstdir = '/Users/macmini/PycharmProjects/DeepObjectClassifier/datasets/images/' + mode + '/negative'
+        srcdir = '/Users/macmini/Downloads/animals/train/' + ex
+        dstdir = './datasets/images/' + mode + '/negative'
         copy_image_files(srcdir, dstdir, neg)
 
 
 if __name__ == '__main__':
     cleanup_images_folder()
-    copy_examples('train', pos=9000, neg=200)
+    copy_examples('train', pos=2000, neg=2000)
     copy_examples('cv',    pos=100,  neg=20)
     copy_examples('test',  pos=100,  neg=20)
