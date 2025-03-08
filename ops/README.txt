@@ -113,9 +113,12 @@
     cd /var/www/flask-apps/CatIdentifier
     pkill -f CatIdentifier
 
+    #################################
     # To use model from ./config.json
+    #################################
     nohup gunicorn -b 127.0.0.1:5004 application:app > /dev/null 2>&1 &
-    # To run specific model
+
+    ##########################################
+    # To use model specified from command line
+    ##########################################
     # MODEL="m_20250308004639.pkl" nohup gunicorn -b 127.0.0.1:5004 application:app > /dev/null 2>&1 &
-
-
