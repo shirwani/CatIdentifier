@@ -2,7 +2,7 @@ import glob
 import h5py
 from utils import *
 
-cfg = get_configs()
+cfg = get_configs(True)
 num_px = cfg['image']['num_px']
 
 def load_img_files(folder_path, x, y, y_val):

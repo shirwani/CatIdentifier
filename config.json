@@ -51,7 +51,7 @@
             "data_file": "datasets/test.h5"
         },
         "model": {
-            "file": "m_20250307142349.pkl",
+            "file": "m_20250308004639.pkl",
             "layers": [
                 1000,
                 100,

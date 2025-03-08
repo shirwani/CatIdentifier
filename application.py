@@ -7,8 +7,14 @@ from PIL import Image
 from io import BytesIO
 import json
 import os
+import sys
 
-cfg = get_configs()
+dev = False
+if len(sys.argv) > 1:
+    if sys.argv[1] == '-dev' or sys.argv[1] == '--dev':
+        dev = True
+
+cfg = get_configs(dev)
 model_file          = cfg['model']['file']
 icon_img            = cfg['flask-app']['icon_img']
 default_img_url     = cfg['flask-app']['default_img_url']
